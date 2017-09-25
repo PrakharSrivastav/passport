@@ -2,6 +2,7 @@
 
 namespace Laravel\Passport\Console;
 
+use Storage;
 use phpseclib\Crypt\RSA;
 use Laravel\Passport\Passport;
 use Illuminate\Console\Command;
@@ -32,17 +33,23 @@ class KeysCommand extends Command
     {
         $keys = $rsa->createKey(4096);
 
+        // Prakhar : Changed the storage path location
         list($publicKey, $privateKey) = [
-            Passport::keyPath('oauth-public.key'),
-            Passport::keyPath('oauth-private.key'),
+            // Passport::keyPath('oauth-public.key'),
+            // Passport::keyPath('oauth-private.key'),
+            Storage::disk("gcs")->path('oauth-public.key'),
+            Storage::disk("gcs")->path('oauth-private.key'),
         ];
 
         if ((file_exists($publicKey) || file_exists($privateKey)) && ! $this->option('force')) {
             return $this->error('Encryption keys already exist. Use the --force option to overwrite them.');
         }
 
-        file_put_contents($publicKey, array_get($keys, 'publickey'));
-        file_put_contents($privateKey, array_get($keys, 'privatekey'));
+        // file_put_contents($publicKey, array_get($keys, 'publickey'));
+        // file_put_contents($privateKey, array_get($keys, 'privatekey'));
+        Storage::disk("gcs")->put($publicKey, array_get($keys, 'publickey'));
+        Storage::disk("gcs")->put($privateKey, array_get($keys, 'privatekey'));
+
 
         $this->info('Encryption keys generated successfully.');
     }

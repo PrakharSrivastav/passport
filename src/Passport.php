@@ -314,11 +314,14 @@ class Passport
      */
     public static function keyPath($file)
     {
+
         $file = ltrim($file, '/\\');
 
-        return static::$keyPath
-            ? rtrim(static::$keyPath, '/\\').DIRECTORY_SEPARATOR.$file
-            : storage_path($file);
+        return Storage::disk("gcs")->path($file);
+
+        // return static::$keyPath
+        //    ? rtrim(static::$keyPath, '/\\').DIRECTORY_SEPARATOR.$file
+        //    : storage_path($file);
     }
 
     /**

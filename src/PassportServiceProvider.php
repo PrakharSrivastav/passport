@@ -2,6 +2,7 @@
 
 namespace Laravel\Passport;
 
+use Storage;
 use DateInterval;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Auth\Events\Logout;
@@ -229,7 +230,8 @@ class PassportServiceProvider extends ServiceProvider
     protected function makeCryptKey($key)
     {
         return new CryptKey(
-            'file://'.Passport::keyPath($key),
+            //Passport::keyPath($key),
+            Storage::disk("gcs")->path($key),
             null,
             false
         );
